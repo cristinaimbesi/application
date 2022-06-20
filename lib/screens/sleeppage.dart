@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:chopper/chopper.dart';
 import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
+import 'package:meb_application/swagger/swaggermodel.swagger.dart';
 
 import '../utils/stringpage.dart';
 import 'finalpage.dart';
@@ -17,11 +19,26 @@ class SleepPage extends StatefulWidget {
 }
 
 class _SleepPageState extends State<SleepPage> {
+  List<FitbitSleepData>? sleepData;
+  DateTime? dateOfSleep;
+  DateTime? entryDateTime;
+  DateTime? endTime;
+  double? duration;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           actions: [
+            IconButton(
+                onPressed: () async {
+                  Swaggermodel client = Swaggermodel.create();
+                  Response responseAUTH = await client.oauth2TokenPost(
+                      clientId: Strings.fitbitClientID,
+                      grantType: 'authorization_code');
+                  print(responseAUTH);
+                },
+                icon: Icon(Icons.abc_sharp)),
             IconButton(
                 onPressed: () async {
                   String? userId = await FitbitConnector.authorize(
@@ -36,15 +53,27 @@ class _SleepPageState extends State<SleepPage> {
                     clientID: Strings.fitbitClientID,
                     clientSecret: Strings.fitbitClientSecret,
                   );
-                  final sleepData = await fitbitSleepDataManager
+
+                  sleepData = await fitbitSleepDataManager
                       .fetch(FitbitSleepAPIURL.withUserIDAndDay(
                     date: DateTime.now().subtract(Duration(days: 1)),
                     userID: userId,
                   )) as List<FitbitSleepData>;
-                  final asleep = Text(' ${sleepData[0].dateOfSleep}');
-                  final wokeup = Text(' ${sleepData[0].entryDateTime}');
-                  print(asleep);
-                  print(wokeup);
+
+                  /*final asleep = Text(' ${sleepData![0].dateOfSleep}');
+                  final wokeup = Text(' ${sleepData![0].entryDateTime}');*/
+
+                  if (sleepData!.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("No sleep data to show")));
+                  } else {
+                    setState(() {
+                      dateOfSleep = sleepData![0].dateOfSleep;
+                      entryDateTime = sleepData![0].entryDateTime;
+                      //endTime = sleepData![0].endTime;
+                      //duration = sleepData![0].duration;
+                    });
+                  }
                 },
                 icon: Icon(Icons.favorite))
           ],
@@ -62,21 +91,21 @@ class _SleepPageState extends State<SleepPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
-                        margin: EdgeInsets.only(left: 2.0),
-                        child:
-                            Text('Minutes of sleep: ') //31800000 millisecondi
+                        margin: const EdgeInsets.only(left: 2.0),
+                        child: const Text(
+                            'Minutes of sleep: ') //31800000 millisecondi
                         ),
-                    Flexible(
-                      child: TextField(),
+                    Container(
+                      child: Text(duration.toString()),
                     ),
                     Container(
-                        margin: EdgeInsets.only(bottom: 16.0),
+                        margin: const EdgeInsets.only(bottom: 16.0),
                         child: Row(
                           children: <Widget>[
                             Container(
-                                margin: EdgeInsets.only(
+                                margin: const EdgeInsets.only(
                                     left: 45.0, bottom: 10.0, top: 20.0),
-                                child: const Text('you fell asleep at:',
+                                child: const Text('You fell asleep at: ',
                                     style: TextStyle(
                                         fontSize: 15.0,
                                         color: Color.fromARGB(255, 7, 25, 58),
@@ -87,8 +116,8 @@ class _SleepPageState extends State<SleepPage> {
                                     bottom: 10.0,
                                     top: 20.0,
                                     right: 20.0),
-                                child: Row(children: [
-                                  Text('you woke up at: ',
+                                child: Row(children: const [
+                                  Text('You woke up at: ',
                                       style: TextStyle(
                                           fontSize: 15.0,
                                           color: Color.fromARGB(255, 7, 25, 58),
@@ -99,15 +128,19 @@ class _SleepPageState extends State<SleepPage> {
                     Row(
                       children: [
                         Container(
-                          margin: EdgeInsets.only(left: 50.0, bottom: 50),
-                          child: Text('2022-06-10 00:00:00.000'),
+                          margin: const EdgeInsets.only(left: 50.0, bottom: 50),
+                          child: dateOfSleep != null
+                              ? Text(dateOfSleep.toString())
+                              : const Text('No sleep data to show'),
                           height: 50,
                           width: 90,
                           color: Colors.red,
                         ),
                         Container(
-                          margin: EdgeInsets.only(left: 80.0, bottom: 50),
-                          child: Text('2022-06-10 06:56:00.000'),
+                          margin: const EdgeInsets.only(left: 80.0, bottom: 50),
+                          child: endTime != null
+                              ? Text(endTime.toString())
+                              : const Text('No sleep data to show'),
                           height: 50,
                           width: 90,
                           color: Colors.blue,

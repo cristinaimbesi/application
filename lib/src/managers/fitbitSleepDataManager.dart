@@ -25,7 +25,7 @@ class FitbitSleepDataManager extends FitbitDataManager {
     //Extract data and return them
     List<FitbitSleepData> sleepDataPoints =
         _extractFitbitSleepData(response, fitbitUrl.userID);
-    return response; //sleepDataPoints; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    return sleepDataPoints;
   } // fetch
 
   /// A private method that extracts [FitbitSleepData] from the given response.

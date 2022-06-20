@@ -6,11 +6,23 @@ import 'package:dio/dio.dart';
 import '../fitbitter.dart';
 import '../utils/stringpage.dart';
 
-class WorkoutPage extends StatelessWidget {
+class WorkoutPage extends StatefulWidget {
   WorkoutPage({Key? key}) : super(key: key);
+
+  //var step = FitbitActivityData(activityId: String.);
 
   static const route = '/workout';
   static const routename = 'WorkoutPage';
+  @override
+  _WorkoutPageState createState() => _WorkoutPageState();
+}
+
+class _WorkoutPageState extends State<WorkoutPage> {
+  List<FitbitActivityData>? stepsData;
+  String? activityId;
+  double? calories;
+  double? distance;
+  double? duration;
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +32,14 @@ class WorkoutPage extends StatelessWidget {
             IconButton(
                 onPressed: () async {
                   try {
-                    var response = await Dio().get('http://www.google.com');
+                    var response = await Dio().get(
+                        'https://api.fitbit.com/1/user/-/activities/goals/daily.json');
                     print(response);
                   } catch (e) {
                     print(e);
                   }
                 },
-                icon: Icon(Icons.favorite))
+                icon: const Icon(Icons.favorite))
           ],
           title: const Text('Workout',
               style: TextStyle(
@@ -74,7 +87,7 @@ class WorkoutPage extends StatelessWidget {
               Container(
                 margin:
                     const EdgeInsets.only(left: 20.0, bottom: 30.0, top: 0.0),
-                child: const Text('min'),
+                child: Text('$duration min'),
                 height: 40,
                 width: 60,
                 color: Colors.red,
@@ -82,7 +95,7 @@ class WorkoutPage extends StatelessWidget {
               Container(
                 margin:
                     const EdgeInsets.only(left: 70.0, bottom: 30.0, top: 0.0),
-                child: const Text('cal'),
+                child: Text('$calories calories'),
                 height: 40,
                 width: 60,
                 color: Colors.green,
@@ -111,43 +124,43 @@ class WorkoutPage extends StatelessWidget {
                   barGroups: [
                     BarChartGroupData(x: 1, barRods: [
                       BarChartRodData(
-                          y: 9,
+                          y: 9, //stepsData![0].distance!,
                           width: 15,
                           colors: [const Color.fromARGB(255, 109, 148, 129)]),
                     ]),
                     BarChartGroupData(x: 2, barRods: [
                       BarChartRodData(
-                          y: 9,
+                          y: 8, //stepsData![1].distance!,
                           width: 15,
                           colors: [const Color.fromARGB(255, 109, 148, 129)]),
                     ]),
                     BarChartGroupData(x: 3, barRods: [
                       BarChartRodData(
-                          y: 4,
+                          y: 8, //stepsData![2].distance!,
                           width: 15,
                           colors: [const Color.fromARGB(255, 109, 148, 129)]),
                     ]),
                     BarChartGroupData(x: 4, barRods: [
                       BarChartRodData(
-                          y: 2,
+                          y: 6, //stepsData![3].distance!,
                           width: 15,
                           colors: [const Color.fromARGB(255, 109, 148, 129)]),
                     ]),
                     BarChartGroupData(x: 5, barRods: [
                       BarChartRodData(
-                          y: 13,
+                          y: 7, //stepsData![4].distance!,
                           width: 15,
                           colors: [const Color.fromARGB(255, 109, 148, 129)]),
                     ]),
                     BarChartGroupData(x: 6, barRods: [
                       BarChartRodData(
-                          y: 17,
+                          y: 7, //stepsData![5].distance!,
                           width: 15,
                           colors: [const Color.fromARGB(255, 109, 148, 129)]),
                     ]),
                     BarChartGroupData(x: 7, barRods: [
                       BarChartRodData(
-                          y: 19,
+                          y: 7, //stepsData![6].distance!,
                           width: 15,
                           colors: [const Color.fromARGB(255, 109, 148, 129)]),
                     ]),
@@ -168,24 +181,34 @@ class WorkoutPage extends StatelessWidget {
                           clientSecret: Strings.fitbitClientSecret,
                           redirectUri: Strings.fitbitRedirectUri,
                           callbackUrlScheme: Strings.fitbitCallbackScheme);
-                      FitbitActivityTimeseriesDataManager
-                          fitbitActivityTimeseriesDataManager =
-                          FitbitActivityTimeseriesDataManager(
+                      FitbitActivityDataManager fitbitActivityDataManager =
+                          FitbitActivityDataManager(
                         clientID: Strings.fitbitClientID,
                         clientSecret: Strings.fitbitClientSecret,
-                        type: 'steps',
+                        //type: 'steps',
                       );
-                      final stepsData =
-                          await fitbitActivityTimeseriesDataManager.fetch(
-                              FitbitActivityTimeseriesAPIURL.dayWithResource(
-                        date: DateTime.now().subtract(Duration(days: 7)),
+                      final stepsData = await fitbitActivityDataManager
+                          .fetch(FitbitActivityAPIURL.day(
+                        date: DateTime.now().subtract(const Duration(days: 7)),
                         userID: userId,
-                        resource: fitbitActivityTimeseriesDataManager.type,
-                      )) as List<FitbitActivityTimeseriesData>;
+                        //resource: fitbitActivityDataManager.type,
+                      )) as List<FitbitActivityData>;
                       final snackBar = SnackBar(
                           content: Text(
-                              'Yesterday you walked ${stepsData[0].value} steps!'));
+                              'Yesterday you walked ${stepsData[0].distance} kilometers!'));
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      if (stepsData.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("No steps data to show")));
+                      } else {
+                        setState(() {
+                          activityId = stepsData[0].activityId!;
+                          distance = stepsData[0].distance!;
+                          //endTime = sleepData![0].endTime;
+                          duration = stepsData[0].duration!;
+                        });
+                      }
                     },
                     child: Text('step'))
               ],

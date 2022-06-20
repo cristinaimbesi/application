@@ -14,8 +14,14 @@ class FitbitSleepData implements FitbitData {
   /// The date of the data entry.
   DateTime? entryDateTime;
 
+  /// The date of when the sleep session finished.
+  DateTime? endTime;
+
   /// The level of the sleep data.
   String? level;
+
+  /// The range of sleep session.
+  double? duration;
 
   /// Default [FitbitSleepData] constructor.
   FitbitSleepData({
@@ -23,6 +29,8 @@ class FitbitSleepData implements FitbitData {
     this.dateOfSleep,
     this.entryDateTime,
     this.level,
+    this.endTime,
+    this.duration,
   });
 
   /// Generates a [FitbitSleepData] obtained from a json.
@@ -30,8 +38,10 @@ class FitbitSleepData implements FitbitData {
     return FitbitSleepData(
       encodedId: json['encodedId'],
       dateOfSleep: Formats.onlyDayDateFormatTicks.parse(json['dateOfSleep']),
+      endTime: DateTime.parse(json['endTime']),
       entryDateTime: DateTime.parse(json['entryDateTime']),
       level: json['level'],
+      duration: double.parse(json['duration']),
     );
   } // fromJson
 
@@ -41,6 +51,8 @@ class FitbitSleepData implements FitbitData {
           ..write('encodedId: $encodedId, ')
           ..write('dateOfSleep: $dateOfSleep, ')
           ..write('entryDateTime: $entryDateTime, ')
+          ..write('endTime: $endTime, ')
+          ..write('duration: $duration, ')
           ..write('level: $level, ')
           ..write(')'))
         .toString();
@@ -52,6 +64,8 @@ class FitbitSleepData implements FitbitData {
       'encodedId': encodedId,
       'dateOfSleep': dateOfSleep,
       'entryDateTime': entryDateTime,
+      'endTime': endTime,
+      'duration': duration,
       'level': level,
     };
   } // toJson
