@@ -1,7 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
-//import 'package:meb_application/screens/homepage.dart';
+import 'package:meb_application/repositories/databaseRepository.dart';
+import 'package:meb_application/screens/mainpage.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../fitbit_entities/access_token.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -14,6 +19,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  late AccessTokenEntity accessTokenEntity = AccessTokenEntity(
+      accessToken: '',
+      expiresIn: 0,
+      refreshToken: '',
+      scope: '',
+      tokenType: '',
+      userId: '');
+
   @override
   void initState() {
     super.initState();
@@ -49,24 +62,60 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FlutterLogin(
-      title: 'ApPlant',
-      theme: LoginTheme(
-        primaryColor: const Color.fromARGB(255, 109, 148, 129),
-      ),
-      onLogin: _loginUser,
-      onSignup: _loginUser,
-      onRecoverPassword: _recoverPassword,
-      //logo: Image.asset('images/logo.jpeg'),
-      //logoTag: 'images/logo.jpeg',
-      onSubmitAnimationCompleted: () async {
-        _toMainPage(context);
-      },
-    );
+    return Consumer<DatabaseRepository>(builder: (child, dao, _) {
+      return FlutterLogin(
+        title: 'ApPlant',
+        theme: LoginTheme(
+          primaryColor: const Color.fromARGB(255, 109, 148, 129),
+        ),
+        onLogin: _loginUser,
+        onSignup: _loginUser,
+        onRecoverPassword: _recoverPassword,
+        //logo: Image.asset('images/logo.jpeg'),
+        //logoTag: 'images/logo.jpeg',
+        onSubmitAnimationCompleted: () async {
+          try {
+            final Dio _dio = Dio();
+            String code = '4d24c20846155800777a8b33840742e7908617cc';
+            final _baseUrl =
+                'https://api.fitbit.com/oauth2/token?code=${code}&grant_type=authorization_code&redirect_uri=http://localhost';
+
+            _dio.options.headers['content-Type'] =
+                'application/x-www-form-urlencoded';
+            _dio.options.headers["authorization"] =
+                "Basic MjM4TFRNOjBlNDExNDYyMmQ0Yzc1MTE4YTNmZWMxYmYzNTEyNTgw";
+
+            Response response = await _dio.post(_baseUrl);
+
+            if (response.statusCode == 200) {
+              accessTokenEntity = AccessTokenEntity.fromJson(response.data);
+              dao.setAccessTokenEntity(accessTokenEntity);
+              dao.setSleepObject();
+              dao.setStepObject();
+            } else {
+              print('Repeat');
+            }
+            print('Response output: ${accessTokenEntity.toJson()}');
+          } catch (e) {
+            print(e.toString());
+          }
+          _toMainPage(context);
+        },
+      );
+    });
   } // build
 
   void _toMainPage(BuildContext context) {
-    Navigator.of(context).pushReplacementNamed('/main');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MainPage(
+          accessTokenEntity: accessTokenEntity,
+        ),
+      ),
+    );
+
+    //Navigator.of(context).pushReplacementNamed('/main');
   }
 }
 

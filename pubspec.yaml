@@ -27,11 +27,12 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  http:
   flutter:
     sdk: flutter
-
+  provider: 
+  
   supercharged: ^2.1.1
-  chopper: ^4.0.1
   json_annotation: ^4.4.0
   flutter_login:
   fitbitter: ^1.1.1
@@ -63,7 +64,6 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.1.7
-  chopper_generator: ^4.0.5
   json_serializable: ^6.1.4
   swagger_dart_code_generator: ^2.4.6
   flutter_test:
@@ -71,7 +71,7 @@ dev_dependencies:
   
 
   #Dev_dependencies needed to floor
-  #flutter pub run build_runner build.\floor_generator: ^1.2.0
+  floor_generator: ^1.2.0
   #build_runner: ^2.1.2
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -103,6 +103,10 @@ flutter:
     - images/happy.jpg
     - images/med.jpg
     - images/angry.jpg
+    - images/sadplant.jpeg
+    - images/midsadplant.jpeg
+    - images/midhappyplant.jpeg
+    - images/happyplant.jpeg
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

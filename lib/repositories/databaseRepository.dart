@@ -1,67 +1,68 @@
-import 'package:meb_application/database/database.dart';
-import 'package:meb_application/database/entities/todrink.dart';
-import 'package:meb_application/database/entities/towalk.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
+import '../fitbit_entities/access_token.dart';
+import '../fitbit_entities/activities_steps_entity.dart';
+import '../fitbit_entities/sleep_entity.dart';
+
 class DatabaseRepository extends ChangeNotifier {
-  //The state of the database is just the AppDatabase
-  final ApPlantDatabase database;
+  AccessTokenEntity? accessTokenEntity;
 
-  //Default constructor
-  DatabaseRepository({required this.database});
-
-  //This method wraps the findAllDrinks() method of the DAO
-  Future<List<Drink>> findAllDrinks() async {
-    final results = await database.drinkDao.findAllDrinks();
-    return results;
-  } //findAllDrinks
-
-  //This method wraps the insertDrink() method of the DAO.
-  //Then, it notifies the listeners that something changed.
-  Future<void> insertDrink(Drink drink) async {
-    await database.drinkDao.insertDrink(drink);
+  FitBitActivitiesStepEntity? activitiesStepEntity;
+  FitBitSleepEntity? bitSleepEntity;
+  void setAccessTokenEntity(AccessTokenEntity token) {
+    accessTokenEntity = token;
     notifyListeners();
-  } //insertDrink
+  }
 
-  //This method wraps the deleteDrink() method of the DAO.
-  //Then, it notifies the listeners that something changed.
-  Future<void> removeDrink(Drink drink) async {
-    await database.drinkDao.deleteDrink(drink);
+  void setStepObject() async {
+    final Dio _dioCr = Dio();
+
+    try {
+      print('Perform request call to activities... ');
+      print('');
+      const _baseUrl =
+          'https://api.fitbit.com/1/user/-/activities/steps/date/today/7d.json';
+
+      _dioCr.options.headers["authorization"] =
+          "Bearer ${accessTokenEntity!.accessToken}";
+
+      Response response = await _dioCr.get(_baseUrl);
+      if (response.statusCode == 200) {
+        print(response.data);
+        activitiesStepEntity =
+            FitBitActivitiesStepEntity.fromJson(response.data);
+      } else {
+        print('Wrong authorization');
+      }
+    } catch (e) {
+      print(e);
+    }
     notifyListeners();
-  } //removeDrink
+  }
 
-  //This method wraps the updateDrink() method of the DAO.
-  //Then, it notifies the listeners that something changed.
-  Future<void> updateDrink(Drink drink) async {
-    await database.drinkDao.updateDrink(drink);
+  void setSleepObject() async {
+    final Dio _dioCr = Dio();
+    try {
+      print('Perform request call to activities... ');
+      print('');
+      const _baseUrl =
+          'https://api.fitbit.com/1.2/user/-/sleep/date/today.json';
+
+      _dioCr.options.headers["authorization"] =
+          "Bearer ${accessTokenEntity!.accessToken}";
+
+      Response response = await _dioCr.get(_baseUrl);
+      if (response.statusCode == 200) {
+        print(response.data);
+
+        bitSleepEntity = FitBitSleepEntity.fromJson(response.data);
+      } else {
+        print('Wrong authorization');
+      }
+    } catch (e) {
+      print(e);
+    }
     notifyListeners();
-  } //updateDrink
-
-  //This method wraps the findAllWalks() method of the DAO
-  Future<List<Walk>> findAllWalks() async {
-    final results = await database.walkDao.findAllWalks();
-    return results;
-  } //findAllWalks
-
-  //This method wraps the insertWalk() method of the DAO.
-  //Then, it notifies the listeners that something changed.
-  Future<void> insertWalk(Walk walk) async {
-    await database.walkDao.insertWalk(walk);
-    notifyListeners();
-  } //insertWalk
-
-  //This method wraps the deleteWalk() method of the DAO.
-  //Then, it notifies the listeners that something changed.
-  Future<void> removeWalk(Walk walk) async {
-    await database.walkDao.deleteWalk(walk);
-    notifyListeners();
-  } //removeWalk
-
-  //This method wraps the updateDrink() method of the DAO.
-  //Then, it notifies the listeners that something changed.
-  Future<void> updateWalk(Walk walk) async {
-    await database.walkDao.updateWalk(walk);
-    notifyListeners();
-  } //updateWalk
-
+  }
 } //DatabaseRepository

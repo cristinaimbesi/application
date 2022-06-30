@@ -23,7 +23,7 @@ class _FinalPageState extends State<FinalPage> {
           children: <Widget>[
             const Text(
               'Thank you for the vote!',
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 25, fontStyle: FontStyle.italic),
             ),
           ],
         ),

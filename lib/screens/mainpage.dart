@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:meb_application/fitbit_entities/access_token.dart';
 import 'package:meb_application/screens/homepage.dart';
 import 'package:meb_application/screens/plantpage.dart';
 import 'package:meb_application/screens/profile_page.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  const MainPage({Key? key, @required this.accessTokenEntity})
+      : super(key: key);
   static const route = '/main';
   static const routename = 'MainPage';
+  final AccessTokenEntity? accessTokenEntity;
+
   @override
   _MainPageState createState() => _MainPageState();
 }
@@ -14,7 +18,13 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int currentIndex = 0; //default value
   // ignore: prefer_const_constructors
-  List screens = [HomePage(), PlantPage(), Profile_Page()];
+  List screens = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    screens = [HomePage(), PlantPage(), Profile_Page()];
+  }
 
   @override
   Widget build(BuildContext context) {

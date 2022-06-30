@@ -22,12 +22,11 @@ Future<void> main() async {
   final ApPlantDatabase database =
       await $FloorApPlantDatabase.databaseBuilder('app_database.db').build();
   //This creates a new DatabaseRepository from the AppDatabase instance just initialized
-  final databaseRepository = DatabaseRepository(database: database);
 
   //Here, we run the app and we provide to the whole widget tree the instance of the DatabaseRepository.
   //That instance will be then shared through the platform and will be unique.
   runApp(ChangeNotifierProvider<DatabaseRepository>(
-    create: (context) => databaseRepository,
+    create: (context) => DatabaseRepository(),
     child: const MyApp(),
   ));
 } //main
@@ -56,7 +55,7 @@ class MyApp extends StatelessWidget {
         WaterPage.route: (context) => const WaterPage(),
         SleepPage.route: (context) => SleepPage(),
         '/workout': (context) => WorkoutPage(),
-        PlantPage.route: (context) => const PlantPage(),
+        PlantPage.route: (context) => PlantPage(),
       },
     );
   } //build

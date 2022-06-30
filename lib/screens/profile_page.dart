@@ -5,8 +5,6 @@ import 'package:meb_application/screens/sleeppage.dart';
 import 'package:meb_application/screens/waterpage.dart';
 import 'package:meb_application/screens/workoutpage.dart';
 import 'package:meb_application/utils/userpreferences.dart';
-import 'package:meb_application/widgets/appbar_widget.dart';
-import 'package:meb_application/widgets/buttonwidget.dart';
 import 'package:meb_application/widgets/profilewidget.dart';
 
 class Profile_Page extends StatefulWidget {
@@ -34,18 +32,15 @@ class _Profile_PageState extends State<Profile_Page> {
           ]),
       drawer: Drawer(
         child: ListView(padding: EdgeInsets.zero, children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 109, 148, 129),
-            ),
+          DrawerHeader(
+            //decoration: const BoxDecoration(
+            //color: Color.fromARGB(255, 109, 148, 129),
+            //),
             child: Center(
-              child: Text(
-                'Choose your page',
-                style: TextStyle(
-                  fontStyle: FontStyle.italic,
-                  fontSize: 25.0,
-                  color: Colors.white70,
-                ),
+              child: Image.asset(
+                'images/logo.jpeg',
+                width: 500,
+                height: 500,
               ),
             ),
           ),

@@ -5,7 +5,7 @@ import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.da
 
 class WaterPage extends StatefulWidget {
   const WaterPage({Key? key}) : super(key: key);
-  static const routename = 'Water';
+  static const routename = 'WaterPage';
   static const route = '/water';
   @override
   State<WaterPage> createState() => _WaterPageState();
@@ -14,7 +14,6 @@ class WaterPage extends StatefulWidget {
 class _WaterPageState extends State<WaterPage> {
   double waterglasses = 0.0;
 
-  get currentIndex => null;
   @override
   Widget build(BuildContext context) {
     print('$WaterPage.routename built');
@@ -35,10 +34,9 @@ class _WaterPageState extends State<WaterPage> {
           child: Column(children: [
             //Expanded(
             Row(mainAxisAlignment: MainAxisAlignment.start, children: const [
-              Icon(Icons.water_drop, size: 25, color: Colors.cyan),
               Text(
-                'Giorno x:',
-                style: TextStyle(fontSize: 25),
+                'Today drinking:',
+                style: TextStyle(fontSize: 25, fontStyle: FontStyle.italic),
               ),
             ]),
             Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
@@ -55,7 +53,7 @@ class _WaterPageState extends State<WaterPage> {
               progressColor: const Color.fromARGB(255, 109, 148, 129),
             ),
             Container(
-                margin: const EdgeInsets.only(top: 50.0),
+                margin: const EdgeInsets.only(top: 30.0),
                 child: const Text(
                     'Press the bottom every time you drink a glass of water; your goal in a day is drinking 2 liters. Start now, drink a glass of water!',
                     textDirection: TextDirection.ltr,
